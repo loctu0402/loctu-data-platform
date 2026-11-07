@@ -128,6 +128,6 @@
   <text x="48" y="495" class="h" fill="#fb923c">AIRFLOW · DAILY 07:30 ICT</text>
   <text x="48" y="514" class="s">source freshness  →  build silver  →  build gold  →  golden eval against an independent recompute  →  daily report  ·  every failure posts to chat</text>
   <rect x="32" y="538" width="1186" height="54" rx="10" fill="#0f1a2c" stroke="#334155"/>
-  <text x="48" y="561" class="h" fill="#94a3b8">CI ON EVERY PULL REQUEST</text>
-  <text x="48" y="580" class="s">dbt parse  ·  SQLFluff (BigQuery)  ·  knowledge gate: every KB metric maps to a contracted gold column  ·  pytest  ·  DAG compile</text>
+  <text x="48" y="561" class="h" fill="#94a3b8">CI ON EVERY PULL REQUEST · CD ON MAIN</text>
+  <text x="48" y="580" class="s">dbt parse  ·  SQLFluff (BigQuery)  ·  knowledge gate  ·  pytest  ·  then a self-hosted runner on the Airflow VM syncs a release, switches it atomically and smoke-checks the DAG</text>
 </svg>

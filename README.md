@@ -23,6 +23,7 @@ An end-to-end analytics engineering monorepo for Saola, a fictional super-app wi
 | `report/` | Expected-value model and the daily email and Google Chat card. |
 | `agent/` | Knowledge base, golden question set and the gate that keeps both in line with the dbt contracts. |
 | `.claude/skills/` | How the agent answers a question and how an engineer ships a model change. |
+| `deploy/` | CD to the Airflow VM: runner setup, release sync with an atomic switch, smoke check. |
 
 ## How a day runs
 
@@ -39,6 +40,16 @@ An end-to-end analytics engineering monorepo for Saola, a fictional super-app wi
 - **Balances are semi-additive.** A week or a month reads its last day, in SQL, in Cube and in the agent's rules.
 - **Contracts on every gold model.** A changed type or a dropped column fails the build before a dashboard sees it.
 - **The knowledge base cannot drift.** CI fails when a KB metric points at a column that is not in its model's contract, or when a metric has no golden case.
+
+## Deploy
+
+When CI passes on `main`, the `deploy` workflow syncs the commit to the Airflow VM through a self-hosted runner labelled `airflow-vm`.
+
+1. `deploy/sync_release.sh` copies the repo into `releases/<sha>` with a checksum-based rsync, then repoints `current` in one atomic rename, so Airflow never reads a half-copied DAG folder.
+2. Each deploy writes a manifest with the commit and the changed files, and the last five releases stay on disk for rollback.
+3. `deploy/smoke_check.sh` confirms the live release is the expected commit, dbt parses against prod, and Airflow imports `saola_daily` without errors.
+
+The `simulate` job runs the same sync and smoke check on a GitHub-hosted runner, so every merge proves the deploy path. The real `deploy` job switches on once the repository variable `AIRFLOW_VM_ENABLED` is `true` and a runner is registered with `deploy/install_runner.sh`.
 
 ## Lineage
 

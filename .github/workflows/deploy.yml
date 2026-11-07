@@ -1,0 +1,46 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-airflow-vm
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      SAOLA_GCP_PROJECT: saola-data-ci
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: bash deploy/sync_release.sh "$RUNNER_TEMP/airflow-vm"
+      - run: bash deploy/sync_release.sh "$RUNNER_TEMP/airflow-vm"
+      - run: bash deploy/smoke_check.sh "$RUNNER_TEMP/airflow-vm"
+      - run: ls -l "$RUNNER_TEMP/airflow-vm" "$RUNNER_TEMP/airflow-vm/deploys"
+
+  deploy:
+    needs: simulate
+    if: vars.AIRFLOW_VM_ENABLED == 'true'
+    runs-on: [self-hosted, airflow-vm]
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - run: bash deploy/sync_release.sh /opt/airflow/repo
+      - run: DBT_TARGET=prod bash deploy/smoke_check.sh /opt/airflow/repo --airflow

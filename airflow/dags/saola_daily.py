@@ -10,7 +10,7 @@ try:
 except ImportError:
     from airflow.operators.bash import BashOperator
 
-REPO = os.environ.get("SAOLA_REPO", "/opt/airflow/repo")
+REPO = os.environ.get("SAOLA_REPO", "/opt/airflow/repo/current")
 DBT = f"cd {REPO}/dbt && dbt {{cmd}} --target prod --profiles-dir ."
 
 
