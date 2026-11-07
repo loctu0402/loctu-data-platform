@@ -1,0 +1,50 @@
+version: 2
+
+sources:
+  - name: wallet
+    description: Savings ledger replicated from the core banking-partner database by CDC.
+    database: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+    schema: bronze_wallet
+    loaded_at_field: _loaded_at
+    config:
+      freshness:
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
+    tables:
+      - name: accounts
+        columns:
+          - name: account_id
+            data_tests: [unique, not_null]
+      - name: transactions
+        columns:
+          - name: txn_id
+            data_tests: [unique, not_null]
+      - name: daily_rates
+
+  - name: app
+    description: Product analytics events streamed from the mobile app.
+    database: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+    schema: bronze_app
+    loaded_at_field: _loaded_at
+    config:
+      freshness:
+        warn_after: {count: 26, period: hour}
+    tables:
+      - name: events
+
+  - name: kitchen
+    description: Orders from the kitchen POS and delivery platforms, synced by API connectors.
+    database: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+    schema: bronze_kitchen
+    loaded_at_field: _loaded_at
+    config:
+      freshness:
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
+    tables:
+      - name: kitchens
+      - name: orders
+        columns:
+          - name: order_id
+            data_tests: [unique, not_null]
+      - name: deliveries

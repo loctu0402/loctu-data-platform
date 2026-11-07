@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: fct_savings_daily
+    description: One row per day for the whole savings product. Balance columns are end-of-day snapshots and do not add up across days.
+    config:
+      contract: {enforced: true}
+      meta: {owner: analytics-engineering, grain: date_day}
+    columns:
+      - {name: date_day, data_type: date, data_tests: [unique, not_null]}
+      - {name: aum_end, data_type: numeric, description: Sum of end-of-day balances across all accounts.}
+      - {name: cash_in_amount, data_type: numeric}
+      - {name: cash_out_amount, data_type: numeric}
+      - {name: interest_amount, data_type: numeric}
+      - {name: net_flow_amount, data_type: numeric, description: Cash in minus cash out. Interest is excluded.}
+      - {name: funded_accounts, data_type: int64, description: Accounts holding at least 1 unit at end of day.}
+      - {name: new_funded_accounts, data_type: int64}
+      - {name: reactivated_accounts, data_type: int64}
+      - {name: churned_accounts, data_type: int64, description: Funded yesterday and empty today.}
+      - {name: depositing_accounts, data_type: int64}
+      - {name: withdrawing_accounts, data_type: int64}
+      - {name: annual_rate, data_type: float64}
+
+  - name: agg_savings_flow_daily
+    description: >
+      Dashboard aggregate. CUBE writes one row per filter combination with 'all' as the rolled-up value,
+      so distinct accounts are counted at every grain and never summed.
+    config:
+      contract: {enforced: true}
+      meta: {owner: analytics-engineering, grain: date_day x txn_type x channel x segment}
+    columns:
+      - {name: date_day, data_type: date, data_tests: [not_null]}
+      - name: txn_type
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments: {values: [cash_in, cash_out]}
+      - {name: channel, data_type: string}
+      - {name: segment, data_type: string}
+      - {name: amount, data_type: numeric}
+      - {name: txn_count, data_type: int64}
+      - {name: accounts, data_type: int64}
+
+  - name: fct_deposit_funnel_daily
+    description: Daily deposit funnel from app events, distinct users per step.
+    config:
+      contract: {enforced: true}
+      meta: {owner: analytics-engineering, grain: date_day}
+    columns:
+      - {name: date_day, data_type: date, data_tests: [unique, not_null]}
+      - {name: users_opened, data_type: int64}
+      - {name: users_started_deposit, data_type: int64}
+      - {name: users_deposited, data_type: int64}
+
+  - name: dim_account
+    description: One row per savings account with acquisition attributes and current state.
+    columns:
+      - {name: account_id, data_tests: [unique, not_null]}
+      - name: current_state
+        data_tests:
+          - accepted_values:
+              arguments: {values: [new, retained, reactivated, churned, inactive]}

@@ -1,0 +1,38 @@
+version: 2
+
+exposures:
+  - name: daily_report
+    label: Daily report (email and chat)
+    type: application
+    maturity: high
+    url: https://github.com/loctu0402/saola-data-platform/tree/main/report
+    owner: {name: Analytics Engineering}
+    depends_on:
+      - ref('fct_savings_daily')
+      - ref('agg_kitchen_daily')
+      - ref('fct_deposit_funnel_daily')
+
+  - name: analytics_agent
+    label: AI analytics agent
+    type: application
+    maturity: medium
+    url: https://github.com/loctu0402/saola-data-platform/tree/main/agent
+    owner: {name: Analytics Engineering}
+    depends_on:
+      - ref('fct_savings_daily')
+      - ref('agg_savings_flow_daily')
+      - ref('fct_deposit_funnel_daily')
+      - ref('agg_kitchen_daily')
+      - ref('fct_orders')
+
+  - name: looker_studio_dashboards
+    label: Looker Studio dashboards via Cube
+    type: dashboard
+    maturity: high
+    url: https://github.com/loctu0402/saola-data-platform/tree/main/semantic/cube
+    owner: {name: Analytics Engineering}
+    depends_on:
+      - ref('fct_savings_daily')
+      - ref('agg_savings_flow_daily')
+      - ref('fct_orders')
+      - ref('dim_account')

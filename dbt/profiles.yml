@@ -1,0 +1,19 @@
+saola:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-dev') }}"
+      dataset: "{{ env_var('SAOLA_DEV_DATASET', 'dbt_dev') }}"
+      location: asia-southeast1
+      threads: 8
+      maximum_bytes_billed: 20000000000
+    prod:
+      type: bigquery
+      method: service-account
+      keyfile: "{{ env_var('SAOLA_SA_KEYFILE', '/secrets/dbt-sa.json') }}"
+      project: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+      dataset: analytics
+      location: asia-southeast1
+      threads: 16

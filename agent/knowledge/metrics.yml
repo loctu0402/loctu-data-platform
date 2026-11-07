@@ -1,0 +1,89 @@
+metrics:
+  - name: balance
+    synonyms: [aum, savings balance, assets under management]
+    definition: Sum of end-of-day balances across all savings accounts.
+    model: fct_savings_daily
+    columns: [aum_end]
+    grain: day
+    aggregation: semi-additive, a period reads its last day
+    unit: currency
+
+  - name: net_flow
+    synonyms: [net inflow, net cash]
+    definition: Cash in minus cash out. Interest is not a flow.
+    model: fct_savings_daily
+    columns: [cash_in_amount, cash_out_amount, net_flow_amount]
+    grain: day
+    aggregation: sum over the period
+    unit: currency
+
+  - name: funded_accounts
+    synonyms: [active savers, funded users]
+    definition: Accounts holding at least 1 unit at end of day.
+    model: fct_savings_daily
+    columns: [funded_accounts]
+    grain: day
+    aggregation: semi-additive, a period reads its last day
+    unit: accounts
+
+  - name: account_churn
+    synonyms: [churned accounts, lost savers]
+    definition: Accounts funded the day before and empty at end of day.
+    model: fct_savings_daily
+    columns: [churned_accounts, new_funded_accounts, reactivated_accounts]
+    grain: day
+    aggregation: sum over the period
+    unit: accounts
+
+  - name: flow_by_channel
+    synonyms: [cash in by channel, deposit channel mix]
+    definition: Successful cash in or cash out by funding channel and customer segment, with distinct accounts at each cut.
+    model: agg_savings_flow_daily
+    columns: [txn_type, channel, segment, amount, accounts]
+    grain: day x txn_type x channel x segment
+    aggregation: read the row for the cut you need; 'all' is the rolled-up value; never sum accounts
+    unit: currency and accounts
+
+  - name: deposit_conversion
+    synonyms: [savings tab conversion, deposit funnel]
+    definition: Users who completed a deposit over users who opened the savings tab, same day.
+    model: fct_deposit_funnel_daily
+    columns: [users_opened, users_started_deposit, users_deposited]
+    grain: day
+    aggregation: ratio of daily distinct users, do not average daily rates over a period
+    unit: share
+
+  - name: orders
+    synonyms: [order volume]
+    definition: Orders placed with a kitchen, completed or cancelled.
+    model: agg_kitchen_daily
+    columns: [orders, completed_orders]
+    grain: day x kitchen x platform
+    aggregation: sum over the period on the kitchen and platform cut you need
+    unit: orders
+
+  - name: on_time_rate
+    synonyms: [on-time delivery, delivery sla]
+    definition: Completed orders delivered within 35 minutes of the order, over completed orders.
+    model: agg_kitchen_daily
+    columns: [on_time_orders, completed_orders]
+    grain: day x kitchen x platform
+    aggregation: sum numerator and denominator over the period, then divide
+    unit: share
+
+  - name: cancel_rate
+    definition: Cancelled orders over all orders.
+    model: agg_kitchen_daily
+    columns: [orders, completed_orders]
+    grain: day x kitchen x platform
+    aggregation: 1 - sum(completed_orders) / sum(orders)
+    unit: share
+
+  - name: delivery_time
+    synonyms: [average delivery minutes]
+    definition: Minutes from order to drop-off for completed orders.
+    model: agg_kitchen_daily
+    columns: [delivery_minutes_sum, completed_orders]
+    grain: day x kitchen x platform
+    aggregation: sum(delivery_minutes_sum) / sum(completed_orders)
+    unit: minutes

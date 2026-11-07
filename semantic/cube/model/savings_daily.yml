@@ -1,0 +1,30 @@
+cubes:
+  - name: savings_daily
+    sql_table: gold.fct_savings_daily
+    description: Product-level savings snapshot, one row per day.
+
+    dimensions:
+      - name: date_day
+        sql: "TIMESTAMP({CUBE}.date_day)"
+        type: time
+        primary_key: true
+
+    measures:
+      - name: balance
+        title: Balance under management
+        description: End-of-day balance. A period shows its last day.
+        sql: aum_end
+        type: sum
+        rolling_window: {trailing: 1 day, offset: end}
+
+      - name: funded_accounts
+        description: Accounts holding at least 1 unit at end of day. A period shows its last day.
+        sql: funded_accounts
+        type: sum
+        rolling_window: {trailing: 1 day, offset: end}
+
+      - {name: cash_in, sql: cash_in_amount, type: sum}
+      - {name: cash_out, sql: cash_out_amount, type: sum}
+      - {name: net_flow, description: Cash in minus cash out., sql: net_flow_amount, type: sum}
+      - {name: new_funded_accounts, sql: new_funded_accounts, type: sum}
+      - {name: churned_accounts, sql: churned_accounts, type: sum}

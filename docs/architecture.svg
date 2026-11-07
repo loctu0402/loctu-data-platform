@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1250 610" width="1250" height="610" font-family="Inter, Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#2a2410"/><stop offset="1" stop-color="#1a1708"/></linearGradient>
+    <style>
+      .box{fill:#111a2e;stroke-width:1.3}
+      .t{fill:#e2e8f0;font-size:14px;font-weight:700}
+      .s{fill:#94a3b8;font-size:11.5px}
+      .h{font-size:11px;font-weight:700;letter-spacing:.08em}
+      .flow{fill:none;stroke-width:1.6;stroke-opacity:.45}
+    </style>
+  </defs>
+  <rect width="1250" height="610" rx="18" fill="#0b1220"/>
+  <text x="32" y="44" fill="#f8fafc" font-size="22" font-weight="800">Saola data platform</text>
+  <text x="32" y="66" fill="#94a3b8" font-size="13">Source systems to contracted marts on BigQuery, then dashboards, a forecast-checked daily report and an AI agent, every morning.</text>
+
+  <text x="32" y="98" class="h" fill="#f59e0b">SOURCES</text>
+  <text x="262" y="98" class="h" fill="#fb923c">INGEST</text>
+  <text x="492" y="98" class="h" fill="#38bdf8">TRANSFORM · dbt on BigQuery</text>
+  <text x="832" y="98" class="h" fill="#c084fc">SERVE</text>
+  <text x="1040" y="98" class="h" fill="#34d399">USE</text>
+
+  <path id="p1" class="flow" stroke="#f59e0b" d="M222,134 C242,134 242,180 262,180"/>
+  <path id="p2" class="flow" stroke="#f59e0b" d="M222,204 C242,204 242,180 262,180"/>
+  <path id="p3" class="flow" stroke="#f59e0b" d="M222,274 C242,274 242,180 262,180"/>
+  <path id="p4" class="flow" stroke="#f59e0b" d="M222,344 C242,344 242,180 262,180"/>
+  <path id="p5" class="flow" stroke="#f59e0b" d="M222,414 C242,414 242,180 262,180"/>
+  <path id="p6" class="flow" stroke="#fb923c" d="M357,250 L357,298"/>
+  <path id="p7" class="flow" stroke="#fb923c" d="M452,368 C472,368 472,180 492,180"/>
+  <path id="p8" class="flow" stroke="#38bdf8" d="M642,250 L642,298"/>
+  <path id="p9" class="flow" stroke="#facc15" d="M792,368 C812,368 812,155 832,155"/>
+  <path id="p10" class="flow" stroke="#facc15" d="M792,368 C812,368 812,269 832,269"/>
+  <path id="p11" class="flow" stroke="#facc15" d="M792,388 L832,388"/>
+  <path id="p12" class="flow" stroke="#c084fc" d="M1002,155 L1040,155"/>
+  <path id="p13" class="flow" stroke="#c084fc" d="M1002,269 L1040,269"/>
+  <path id="p14" class="flow" stroke="#c084fc" d="M1002,388 L1040,388"/>
+
+  <g>
+    <circle r="3.2" fill="#fbbf24"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion></circle>
+    <circle r="3.2" fill="#fbbf24"><animateMotion dur="2.4s" begin=".4s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion></circle>
+    <circle r="3.2" fill="#fbbf24"><animateMotion dur="2.4s" begin=".8s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion></circle>
+    <circle r="3.2" fill="#fbbf24"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#p4"/></animateMotion></circle>
+    <circle r="3.2" fill="#fbbf24"><animateMotion dur="2.4s" begin="1.6s" repeatCount="indefinite"><mpath href="#p5"/></animateMotion></circle>
+    <circle r="3.2" fill="#fdba74"><animateMotion dur="1.2s" repeatCount="indefinite"><mpath href="#p6"/></animateMotion></circle>
+    <circle r="3.2" fill="#fdba74"><animateMotion dur="2s" begin=".3s" repeatCount="indefinite"><mpath href="#p7"/></animateMotion></circle>
+    <circle r="3.2" fill="#7dd3fc"><animateMotion dur="1.2s" begin=".6s" repeatCount="indefinite"><mpath href="#p8"/></animateMotion></circle>
+    <circle r="3.2" fill="#fde047"><animateMotion dur="2s" begin=".2s" repeatCount="indefinite"><mpath href="#p9"/></animateMotion></circle>
+    <circle r="3.2" fill="#fde047"><animateMotion dur="1.8s" begin=".7s" repeatCount="indefinite"><mpath href="#p10"/></animateMotion></circle>
+    <circle r="3.2" fill="#fde047"><animateMotion dur="1.2s" begin="1.1s" repeatCount="indefinite"><mpath href="#p11"/></animateMotion></circle>
+    <circle r="3.2" fill="#d8b4fe"><animateMotion dur="1.1s" begin=".5s" repeatCount="indefinite"><mpath href="#p12"/></animateMotion></circle>
+    <circle r="3.2" fill="#d8b4fe"><animateMotion dur="1.1s" begin=".9s" repeatCount="indefinite"><mpath href="#p13"/></animateMotion></circle>
+    <circle r="3.2" fill="#d8b4fe"><animateMotion dur="1.1s" begin="1.3s" repeatCount="indefinite"><mpath href="#p14"/></animateMotion></circle>
+  </g>
+
+  <g>
+    <rect class="box" stroke="#f59e0b" x="32" y="110" width="190" height="48" rx="9"/><text x="46" y="131" class="t">Wallet ledger</text><text x="46" y="148" class="s">CDC from the core database</text>
+    <rect class="box" stroke="#f59e0b" x="32" y="180" width="190" height="48" rx="9"/><text x="46" y="201" class="t">App events</text><text x="46" y="218" class="s">Streamed product analytics</text>
+    <rect class="box" stroke="#f59e0b" x="32" y="250" width="190" height="48" rx="9"/><text x="46" y="271" class="t">Kitchen POS</text><text x="46" y="288" class="s">Orders, brands, kitchens</text>
+    <rect class="box" stroke="#f59e0b" x="32" y="320" width="190" height="48" rx="9"/><text x="46" y="341" class="t">Delivery platforms</text><text x="46" y="358" class="s">Fleet and aggregator APIs</text>
+    <rect class="box" stroke="#f59e0b" x="32" y="390" width="190" height="48" rx="9"/><text x="46" y="411" class="t">Rates and calendar</text><text x="46" y="428" class="s">Daily reference data</text>
+  </g>
+
+  <g>
+    <rect class="box" stroke="#fb923c" x="262" y="110" width="190" height="140" rx="10"/>
+    <text x="276" y="136" class="t">Connectors</text>
+    <text x="276" y="160" class="s">Airbyte CDC and API syncs</text>
+    <text x="276" y="178" class="s">land raw rows with _loaded_at</text>
+    <text x="276" y="204" class="s" fill="#fdba74">This repo: synthetic loader</text>
+    <text x="276" y="222" class="s" fill="#fdba74">ingestion/load_bronze.py</text>
+    <rect class="box" stroke="#fb923c" x="262" y="298" width="190" height="140" rx="10"/>
+    <text x="276" y="324" class="t">Bronze</text>
+    <text x="276" y="348" class="s">bronze_wallet, bronze_app,</text>
+    <text x="276" y="366" class="s">bronze_kitchen datasets</text>
+    <text x="276" y="384" class="s">Source freshness SLAs:</text>
+    <text x="276" y="402" class="s">warn 26h, fail 48h</text>
+  </g>
+
+  <g>
+    <rect class="box" stroke="#38bdf8" x="492" y="110" width="300" height="140" rx="10"/>
+    <text x="508" y="136" class="t">Silver</text>
+    <text x="508" y="160" class="s">Staging views: rename, cast, local business date</text>
+    <text x="508" y="178" class="s">Account-day balances and lifecycle states,</text>
+    <text x="508" y="196" class="s">partitioned by day, clustered by account</text>
+    <text x="508" y="214" class="s">Order and delivery join with timing</text>
+    <text x="508" y="236" class="s" fill="#7dd3fc">tests: unique · not null · relationships · accepted values</text>
+    <rect x="492" y="298" width="300" height="140" rx="10" fill="url(#gold)" stroke="#facc15" stroke-width="1.3"/>
+    <text x="508" y="324" class="t">Gold</text>
+    <text x="508" y="348" class="s">Enforced contracts on every mart</text>
+    <text x="508" y="366" class="s">Grain-safe CUBE aggregates with 'all' rows</text>
+    <text x="508" y="384" class="s">Incremental merge with a 3-day lookback</text>
+    <text x="508" y="402" class="s">Numerators and denominators, never stored rates</text>
+    <text x="508" y="424" class="s" fill="#fde047">reconciliation tests: balance moves only by flows</text>
+  </g>
+
+  <g>
+    <rect class="box" stroke="#c084fc" x="832" y="110" width="170" height="90" rx="10"/>
+    <text x="846" y="136" class="t">Cube semantic layer</text>
+    <text x="846" y="158" class="s">Each metric defined once,</text>
+    <text x="846" y="176" class="s">semi-additive balances,</text>
+    <text x="846" y="194" class="s">pre-aggregations</text>
+    <rect class="box" stroke="#c084fc" x="832" y="224" width="170" height="90" rx="10"/>
+    <text x="846" y="250" class="t">Expected value</text>
+    <text x="846" y="272" class="s">Trend x weekday x payday,</text>
+    <text x="846" y="290" class="s">walk-forward control band</text>
+    <rect class="box" stroke="#c084fc" x="832" y="338" width="170" height="100" rx="10"/>
+    <text x="846" y="364" class="t">Knowledge base</text>
+    <text x="846" y="386" class="s">Metric definitions, rules,</text>
+    <text x="846" y="404" class="s">golden set checked against</text>
+    <text x="846" y="422" class="s">dbt contracts in CI</text>
+  </g>
+
+  <g>
+    <rect class="box" stroke="#34d399" x="1040" y="110" width="178" height="90" rx="10"/>
+    <text x="1054" y="136" class="t">Looker Studio</text>
+    <text x="1054" y="158" class="s">Savings and kitchen</text>
+    <text x="1054" y="176" class="s">dashboards on Cube</text>
+    <rect class="box" stroke="#34d399" x="1040" y="224" width="178" height="90" rx="10"/>
+    <text x="1054" y="250" class="t">Daily report</text>
+    <text x="1054" y="272" class="s">Email and Google Chat,</text>
+    <text x="1054" y="290" class="s">sent once gold is complete</text>
+    <rect class="box" stroke="#34d399" x="1040" y="338" width="178" height="100" rx="10"/>
+    <text x="1054" y="364" class="t">AI analytics agent</text>
+    <text x="1054" y="386" class="s">Claude Code skills answer</text>
+    <text x="1054" y="404" class="s">from the KB only; new</text>
+    <text x="1054" y="422" class="s">questions go to a human</text>
+  </g>
+
+  <rect x="32" y="472" width="1186" height="54" rx="10" fill="#0f1a2c" stroke="#334155"/>
+  <text x="48" y="495" class="h" fill="#fb923c">AIRFLOW · DAILY 07:30 ICT</text>
+  <text x="48" y="514" class="s">source freshness  →  build silver  →  build gold  →  golden eval against an independent recompute  →  daily report  ·  every failure posts to chat</text>
+  <rect x="32" y="538" width="1186" height="54" rx="10" fill="#0f1a2c" stroke="#334155"/>
+  <text x="48" y="561" class="h" fill="#94a3b8">CI ON EVERY PULL REQUEST</text>
+  <text x="48" y="580" class="s">dbt parse  ·  SQLFluff (BigQuery)  ·  knowledge gate: every KB metric maps to a contracted gold column  ·  pytest  ·  DAG compile</text>
+</svg>

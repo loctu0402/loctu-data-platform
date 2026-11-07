@@ -1,0 +1,47 @@
+cubes:
+  - name: orders
+    sql_table: gold.fct_orders
+    description: Kitchen orders at order grain.
+
+    dimensions:
+      - {name: order_id, sql: order_id, type: string, primary_key: true}
+      - {name: ordered_at, sql: ordered_at, type: time}
+      - {name: kitchen_id, sql: kitchen_id, type: string}
+      - {name: platform, sql: platform, type: string}
+      - {name: brand, sql: brand, type: string}
+      - {name: courier_type, sql: courier_type, type: string}
+
+    measures:
+      - {name: orders, type: count}
+      - name: completed_orders
+        type: count
+        filters: [{sql: "{CUBE}.is_completed"}]
+      - name: on_time_orders
+        type: count
+        filters: [{sql: "{CUBE}.is_on_time"}]
+      - name: net_revenue
+        sql: net_amount
+        type: sum
+        filters: [{sql: "{CUBE}.is_completed"}]
+      - name: on_time_rate
+        description: On-time orders over completed orders.
+        sql: "SAFE_DIVIDE({on_time_orders}, {completed_orders})"
+        type: number
+        format: percent
+      - name: cancel_rate
+        sql: "1 - SAFE_DIVIDE({completed_orders}, {orders})"
+        type: number
+        format: percent
+      - name: avg_delivery_minutes
+        sql: delivery_minutes
+        type: avg
+        filters: [{sql: "{CUBE}.is_completed"}]
+
+    pre_aggregations:
+      - name: daily_by_kitchen_platform
+        measures: [orders, completed_orders, on_time_orders, net_revenue]
+        dimensions: [kitchen_id, platform]
+        time_dimension: ordered_at
+        granularity: day
+        partition_granularity: month
+        refresh_key: {every: 1 hour}

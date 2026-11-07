@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: One row per kitchen order with its delivery outcome. Merged incrementally with a three-day lookback for late deliveries.
+    config:
+      contract: {enforced: true}
+      meta: {owner: analytics-engineering, grain: order_id}
+    columns:
+      - {name: order_id, data_type: string, data_tests: [unique, not_null]}
+      - name: kitchen_id
+        data_type: string
+        data_tests:
+          - relationships:
+              arguments: {to: ref('stg_kitchen__kitchens'), field: kitchen_id}
+      - {name: brand, data_type: string}
+      - {name: platform, data_type: string}
+      - {name: ordered_at, data_type: timestamp}
+      - {name: order_date, data_type: date}
+      - {name: net_amount, data_type: numeric}
+      - {name: is_completed, data_type: bool}
+      - {name: courier_type, data_type: string}
+      - {name: rating, data_type: int64}
+      - {name: prep_minutes, data_type: float64}
+      - {name: delivery_minutes, data_type: float64}
+      - {name: is_on_time, data_type: bool, description: Completed and delivered within the on-time window from the order time.}
+
+  - name: agg_kitchen_daily
+    description: >
+      Daily kitchen aggregate with CUBE over kitchen and platform. Rates are not stored; each keeps its
+      numerator and denominator so any roll-up recomputes it correctly.
+    config:
+      contract: {enforced: true}
+      meta: {owner: analytics-engineering, grain: date_day x kitchen_id x platform}
+    columns:
+      - {name: date_day, data_type: date, data_tests: [not_null]}
+      - {name: kitchen_id, data_type: string}
+      - {name: platform, data_type: string}
+      - {name: orders, data_type: int64}
+      - {name: completed_orders, data_type: int64}
+      - {name: on_time_orders, data_type: int64}
+      - {name: net_revenue, data_type: numeric}
+      - {name: delivery_minutes_sum, data_type: float64}
+      - {name: rating_sum, data_type: int64}
+      - {name: rating_count, data_type: int64}

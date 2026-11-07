@@ -1,0 +1,19 @@
+[sqlfluff]
+dialect = bigquery
+templater = jinja
+max_line_length = 140
+exclude_rules = ST06, AM04
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
+load_macros_from_path = dbt/macros
+
+[sqlfluff:templater:jinja:context]
+report_timezone = Asia/Ho_Chi_Minh
+on_time_minutes = 35
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
