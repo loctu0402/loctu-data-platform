@@ -16,7 +16,7 @@ exposures:
     label: AI analytics agent
     type: application
     maturity: medium
-    url: https://github.com/loctu0402/saola-data-platform/tree/main/agent
+    url: https://github.com/loctu0402/saola-data-platform/tree/main/kb
     owner: {name: Analytics Engineering}
     depends_on:
       - ref('fct_savings_daily')

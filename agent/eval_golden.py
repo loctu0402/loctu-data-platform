@@ -9,9 +9,10 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-KB = ROOT / "agent" / "knowledge" / "metrics.yml"
 CASES = ROOT / "agent" / "golden" / "cases.yml"
 MANIFEST = ROOT / "dbt" / "target" / "manifest.json"
+sys.path.insert(0, str(ROOT / "tools"))
+from kb import area_names, load_area
 
 
 def gold_contracts(manifest_path):
@@ -24,7 +25,7 @@ def gold_contracts(manifest_path):
 
 
 def offline_checks(contracts):
-    metrics = {m["name"]: m for m in yaml.safe_load(KB.read_text(encoding="utf-8"))["metrics"]}
+    metrics = {name: {**m.meta, "name": name} for a in area_names() for name, m in load_area(a).metrics.items()}
     cases = yaml.safe_load(CASES.read_text(encoding="utf-8"))["cases"]
     problems = []
     for m in metrics.values():

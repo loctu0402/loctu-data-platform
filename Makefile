@@ -14,6 +14,8 @@ build:
 check:
 	$(DBT) parse --profiles-dir .
 	sqlfluff lint dbt/models dbt/tests
+	python tools/gate.py
+	python tools/ground.py
 	python agent/eval_golden.py
 	pytest -q
 	python -m py_compile airflow/dags/saola_daily.py
