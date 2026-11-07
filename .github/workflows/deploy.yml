@@ -27,9 +27,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
-      - run: bash deploy/sync_release.sh "$RUNNER_TEMP/airflow-vm"
-      - run: bash deploy/sync_release.sh "$RUNNER_TEMP/airflow-vm"
-      - run: bash deploy/smoke_check.sh "$RUNNER_TEMP/airflow-vm"
+      - run: make simulate VM_ROOT="$RUNNER_TEMP/airflow-vm"
       - run: ls -l "$RUNNER_TEMP/airflow-vm" "$RUNNER_TEMP/airflow-vm/deploys"
 
   deploy:

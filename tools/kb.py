@@ -1,5 +1,6 @@
 import json
 import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -111,6 +112,11 @@ def owners_of(path, rules):
         if pattern == "*" or f"/{path}".startswith(pattern):
             found = owners
     return found
+
+
+def git_files(*args):
+    out = subprocess.run(["git", *args], cwd=ROOT, check=True, capture_output=True, text=True)
+    return [line for line in out.stdout.splitlines() if line]
 
 
 def load_cases(area, golden=GOLDEN):

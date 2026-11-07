@@ -1,20 +1,186 @@
 name: ci
 
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SAOLA_GCP_PROJECT: saola-data-ci
 
 jobs:
-  check:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.plan.outputs.lint }}
+      test: ${{ steps.plan.outputs.test }}
+      gate: ${{ steps.plan.outputs.gate }}
+      ground: ${{ steps.plan.outputs.ground }}
+      eval: ${{ steps.plan.outputs.eval }}
+      simulate: ${{ steps.plan.outputs.simulate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - run: make parse || echo "dbt parse failed, so every model counts as reached and the gate round shows the error"
+      - id: plan
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python tools/detect.py --base "$BASE" --head "$HEAD" --out plan.json --github-output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan
+          path: plan.json
+
+  lint:
+    needs: detect
+    if: needs.detect.outputs.lint == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+      - run: mkdir -p results && python tools/lint.py --plan plan.json | tee results/lint.log
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-lint
+          path: results/
+
+  test:
+    needs: detect
+    if: needs.detect.outputs.test == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: make parse
+      - run: mkdir -p results && pytest -q | tee results/test.log
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-test
+          path: results/
+
+  gate:
+    needs: [detect, lint]
+    if: ${{ !cancelled() && needs.detect.outputs.gate == 'true' && !contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+      - run: make parse
+      - run: mkdir -p results && python tools/gate.py --plan plan.json | tee results/gate.log
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-gate
+          path: results/
+
+  ground:
+    needs: [detect, lint, gate]
+    if: ${{ !cancelled() && needs.detect.outputs.ground == 'true' && !contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+      - run: make parse
+      - run: mkdir -p results && python tools/ground.py --plan plan.json | tee results/ground.log
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-ground
+          path: results/
+
+  eval:
+    needs: [detect, lint, gate, ground]
+    if: ${{ !cancelled() && needs.detect.outputs.eval == 'true' && !contains(needs.*.result, 'failure') }}
     runs-on: ubuntu-latest
     env:
-      SAOLA_GCP_PROJECT: saola-data-ci
+      HAS_WAREHOUSE: ${{ secrets.SAOLA_GCP_SA_KEY != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+      - run: make parse
+      - run: mkdir -p results && python tools/eval_golden.py --plan plan.json | tee results/eval.log
+      - if: env.HAS_WAREHOUSE == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SAOLA_GCP_SA_KEY }}
+      - if: env.HAS_WAREHOUSE == 'true'
+        env:
+          SAOLA_GCP_PROJECT: ${{ vars.SAOLA_GCP_PROJECT }}
+        run: python tools/eval_golden.py --plan plan.json --live --target prod | tee results/eval-live.log
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-eval
+          path: results/
+
+  simulate:
+    needs: detect
+    if: needs.detect.outputs.simulate == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: ./.github/actions/setup
+      - run: mkdir -p results && make simulate VM_ROOT="$RUNNER_TEMP/airflow-vm" | tee results/simulate.log
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-simulate
+          path: results/
+
+  report:
+    needs: [detect, lint, test, gate, ground, eval, simulate]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-      - run: pip install -r requirements.txt
-      - run: make check
+      - uses: actions/download-artifact@v4
+        with:
+          path: ci
+          merge-multiple: true
+      - env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: python tools/ci_report.py --dir ci --needs "$NEEDS" | tee report.md >> "$GITHUB_STEP_SUMMARY"
+      - if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: gh pr comment "$PR" --edit-last --create-if-none --body-file report.md
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
