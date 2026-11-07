@@ -42,7 +42,7 @@ with DAG(
     freshness = BashOperator(task_id="source_freshness", bash_command=DBT.format(cmd="source freshness"))
     silver = BashOperator(task_id="build_silver", bash_command=DBT.format(cmd="build --select silver utilities"))
     gold = BashOperator(task_id="build_gold", bash_command=DBT.format(cmd="build --select gold"))
-    golden = BashOperator(task_id="golden_eval", bash_command=f"cd {REPO} && python agent/eval_golden.py --live --target prod")
+    golden = BashOperator(task_id="golden_eval", bash_command=f"cd {REPO} && python tools/eval_golden.py --live --target prod")
     report = BashOperator(
         task_id="daily_report",
         bash_command=f"cd {REPO} && python report/daily_report.py --as-of {{{{ ds }}}} --send",

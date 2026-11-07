@@ -1,0 +1,22 @@
+id: S10
+area: savings
+question: How many distinct accounts deposited through bank transfer yesterday?
+expected_sql: |
+  select accounts
+  from `{gold}.agg_savings_flow_daily`
+  where txn_type = 'cash_in' and channel = 'bank_transfer' and segment = 'all'
+    and date_day = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select count(distinct account_id)
+  from `{silver}.stg_wallet__transactions`
+  where is_success and txn_type = 'cash_in' and channel = 'bank_transfer'
+    and txn_date = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: flow_by_channel
+  filters:
+    - txn_type is cash_in
+    - channel is bank_transfer
+    - segment is the 'all' row
+    - date_day is yesterday
+  grain: one day on one cube cut
+  aggregation: accounts read from a single row, never summed

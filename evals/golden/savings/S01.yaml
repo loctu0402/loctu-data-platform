@@ -1,0 +1,17 @@
+id: S01
+area: savings
+question: What was the savings balance at the end of last month?
+expected_sql: |
+  select aum_end
+  from `{gold}.fct_savings_daily`
+  where date_day = last_day(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month))
+check_sql: |
+  select round(sum(end_balance), 2)
+  from `{silver}.int_wallet__account_day`
+  where date_day = last_day(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month))
+rubric:
+  metric: balance
+  filters:
+    - date_day is the last day of last month
+  grain: one day for the whole product
+  aggregation: the end-of-day snapshot of that day, never a sum of days

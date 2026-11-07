@@ -1,0 +1,7 @@
+id: S17
+area: savings
+question: How many users uninstalled the app after a failed deposit?
+expect_refusal: true
+rubric:
+  missing: app uninstalls
+  refusal: says the app events cover only the three savings tab steps and hold no uninstall event, then hands the question to an analyst

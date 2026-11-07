@@ -1,0 +1,21 @@
+id: S11
+area: savings
+question: How much cash came into savings last month?
+expected_sql: |
+  select sum(amount)
+  from `{gold}.agg_savings_flow_daily`
+  where txn_type = 'cash_in' and channel = 'all' and segment = 'all'
+    and date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+check_sql: |
+  select sum(amount)
+  from `{silver}.stg_wallet__transactions`
+  where is_success and txn_type = 'cash_in'
+    and date_trunc(txn_date, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+rubric:
+  metric: flow_by_channel
+  filters:
+    - txn_type is cash_in
+    - channel and segment are the 'all' rows
+    - every day of last month
+  grain: one month for the whole product
+  aggregation: the sum of daily amounts

@@ -1,0 +1,26 @@
+id: K03
+area: kitchen_ops
+question: Which platform brought the most orders last month?
+expected_sql: |
+  select platform
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'all' and platform != 'all'
+    and date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+  group by platform
+  order by sum(orders) desc, platform
+  limit 1
+check_sql: |
+  select platform
+  from `{silver}.stg_kitchen__orders`
+  where date_trunc(order_date, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+  group by platform
+  order by count(*) desc, platform
+  limit 1
+rubric:
+  metric: orders
+  filters:
+    - kitchen_id is the 'all' row
+    - the platform 'all' row is excluded
+    - every day of last month
+  grain: one month per platform
+  aggregation: orders summed per platform, then the largest platform

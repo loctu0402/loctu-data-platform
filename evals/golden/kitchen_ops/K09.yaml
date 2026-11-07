@@ -1,0 +1,21 @@
+id: K09
+area: kitchen_ops
+question: What was the average delivery time on the own app in the last 7 days?
+expected_sql: |
+  select round(safe_divide(sum(delivery_minutes_sum), sum(completed_orders)), 1)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'all' and platform = 'own_app'
+    and date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select round(avg(if(is_completed, delivery_minutes, null)), 1)
+  from `{silver}.int_kitchen__orders_enriched`
+  where platform = 'own_app'
+    and order_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: delivery_time
+  filters:
+    - kitchen_id is the 'all' row
+    - platform is own_app
+    - the 7 days from a week ago through yesterday
+  grain: seven days on one platform
+  aggregation: summed delivery minutes over summed completed orders

@@ -1,0 +1,23 @@
+id: S09
+area: savings
+question: How many accounts emptied their savings in the last 7 days?
+expected_sql: |
+  select sum(churned_accounts)
+  from `{gold}.fct_savings_daily`
+  where date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select countif(end_balance < 1 and previous_balance >= 1)
+  from (
+    select
+      date_day,
+      end_balance,
+      lag(end_balance) over (partition by account_id order by date_day) as previous_balance
+    from `{silver}.int_wallet__account_day`
+  )
+  where date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: account_churn
+  filters:
+    - the 7 days from a week ago through yesterday
+  grain: seven days for the whole product
+  aggregation: the sum of daily churn events

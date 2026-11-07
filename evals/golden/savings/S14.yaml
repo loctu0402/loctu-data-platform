@@ -1,0 +1,19 @@
+id: S14
+area: savings
+question: What share of users who opened the savings tab yesterday made a deposit?
+expected_sql: |
+  select round(safe_divide(users_deposited, users_opened), 4)
+  from `{gold}.fct_deposit_funnel_daily`
+  where date_day = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select round(safe_divide(
+    count(distinct if(event_name = 'deposit_success', user_id, null)),
+    count(distinct if(event_name = 'open_savings_tab', user_id, null))), 4)
+  from `{silver}.stg_app__events`
+  where event_date = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: deposit_conversion
+  filters:
+    - date_day is yesterday
+  grain: one day
+  aggregation: users who deposited over users who opened the tab

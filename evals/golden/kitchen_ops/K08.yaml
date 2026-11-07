@@ -1,0 +1,19 @@
+id: K08
+area: kitchen_ops
+question: What share of orders were cancelled last month?
+expected_sql: |
+  select round(safe_divide(sum(orders) - sum(completed_orders), sum(orders)), 4)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'all' and platform = 'all'
+    and date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+check_sql: |
+  select round(safe_divide(countif(not is_completed), count(*)), 4)
+  from `{silver}.stg_kitchen__orders`
+  where date_trunc(order_date, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+rubric:
+  metric: cancel_rate
+  filters:
+    - kitchen_id and platform are the 'all' rows
+    - every day of last month
+  grain: one month across all kitchens
+  aggregation: summed cancellations over summed orders

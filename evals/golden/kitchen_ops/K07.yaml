@@ -1,0 +1,26 @@
+id: K07
+area: kitchen_ops
+question: Which kitchen had the highest cancellation rate in the last 7 days?
+expected_sql: |
+  select kitchen_id
+  from `{gold}.agg_kitchen_daily`
+  where platform = 'all' and kitchen_id != 'all'
+    and date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+  group by kitchen_id
+  order by safe_divide(sum(orders) - sum(completed_orders), sum(orders)) desc, kitchen_id
+  limit 1
+check_sql: |
+  select kitchen_id
+  from `{silver}.stg_kitchen__orders`
+  where order_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+  group by kitchen_id
+  order by safe_divide(countif(not is_completed), count(*)) desc, kitchen_id
+  limit 1
+rubric:
+  metric: cancel_rate
+  filters:
+    - platform is the 'all' row
+    - the kitchen 'all' row is excluded
+    - the 7 days from a week ago through yesterday
+  grain: seven days per kitchen
+  aggregation: a ratio of sums per kitchen, then the highest kitchen

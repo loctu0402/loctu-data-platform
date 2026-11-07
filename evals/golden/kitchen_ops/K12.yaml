@@ -1,0 +1,7 @@
+id: K12
+area: kitchen_ops
+question: What was the gross margin of each kitchen last month?
+expect_refusal: true
+rubric:
+  missing: kitchen gross margin
+  refusal: says the kitchen data holds net revenue but no food, packaging or courier cost, so margin cannot be computed, then hands the question to an analyst

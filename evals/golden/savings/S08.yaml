@@ -1,0 +1,23 @@
+id: S08
+area: savings
+question: How many savings accounts churned last month?
+expected_sql: |
+  select sum(churned_accounts)
+  from `{gold}.fct_savings_daily`
+  where date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+check_sql: |
+  select countif(end_balance < 1 and previous_balance >= 1)
+  from (
+    select
+      date_day,
+      end_balance,
+      lag(end_balance) over (partition by account_id order by date_day) as previous_balance
+    from `{silver}.int_wallet__account_day`
+  )
+  where date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+rubric:
+  metric: account_churn
+  filters:
+    - every day of last month
+  grain: one month for the whole product
+  aggregation: the sum of daily churn events

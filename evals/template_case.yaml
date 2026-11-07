@@ -1,0 +1,21 @@
+id: <area letter and number, the same as the file name>
+area: <kb area folder name>
+question: <the question in the words a stakeholder uses>
+expected_sql: |
+  <the answer from the gold dataset, reading {gold} tables, with dates relative to today in Asia/Ho_Chi_Minh>
+check_sql: |
+  <the same answer recomputed from the silver dataset, reading {silver} tables only>
+rubric:
+  metric: <metric name from the area's KB>
+  filters:
+    - <each condition the answer must apply>
+  grain: <what one answer value covers>
+  aggregation: <how the value is rolled up>
+---
+id: <area letter and number, the same as the file name>
+area: <kb area folder name>
+question: <a question the area's KB does not cover>
+expect_refusal: true
+rubric:
+  missing: <the concept the KB lacks>
+  refusal: <what a correct reply says before handing the question to an analyst>

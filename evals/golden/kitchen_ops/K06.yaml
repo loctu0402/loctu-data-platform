@@ -1,0 +1,26 @@
+id: K06
+area: kitchen_ops
+question: Which kitchen had the lowest on-time rate last month?
+expected_sql: |
+  select kitchen_id
+  from `{gold}.agg_kitchen_daily`
+  where platform = 'all' and kitchen_id != 'all'
+    and date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+  group by kitchen_id
+  order by safe_divide(sum(on_time_orders), sum(completed_orders)), kitchen_id
+  limit 1
+check_sql: |
+  select kitchen_id
+  from `{silver}.int_kitchen__orders_enriched`
+  where date_trunc(order_date, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+  group by kitchen_id
+  order by safe_divide(countif(is_completed and delivery_minutes <= 35), countif(is_completed)), kitchen_id
+  limit 1
+rubric:
+  metric: on_time_rate
+  filters:
+    - platform is the 'all' row
+    - the kitchen 'all' row is excluded
+    - every day of last month
+  grain: one month per kitchen
+  aggregation: a ratio of sums per kitchen, then the lowest kitchen

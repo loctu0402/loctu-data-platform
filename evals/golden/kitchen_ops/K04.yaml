@@ -1,0 +1,19 @@
+id: K04
+area: kitchen_ops
+question: What was the on-time delivery rate across all kitchens in the last 7 days?
+expected_sql: |
+  select round(safe_divide(sum(on_time_orders), sum(completed_orders)), 4)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'all' and platform = 'all'
+    and date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select round(safe_divide(countif(is_completed and delivery_minutes <= 35), countif(is_completed)), 4)
+  from `{silver}.int_kitchen__orders_enriched`
+  where order_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: on_time_rate
+  filters:
+    - kitchen_id and platform are the 'all' rows
+    - the 7 days from a week ago through yesterday
+  grain: seven days across all kitchens
+  aggregation: summed on-time orders over summed completed orders, never an average of daily rates

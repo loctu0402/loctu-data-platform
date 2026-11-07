@@ -1,0 +1,19 @@
+id: S05
+area: savings
+question: Did more money come in than go out last month, and by how much?
+expected_sql: |
+  select sum(net_flow_amount)
+  from `{gold}.fct_savings_daily`
+  where date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+check_sql: |
+  select sum(signed_amount)
+  from `{silver}.stg_wallet__transactions`
+  where is_success and txn_type in ('cash_in', 'cash_out')
+    and date_trunc(txn_date, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+rubric:
+  metric: net_flow
+  filters:
+    - every day of last month
+    - interest is excluded
+  grain: one month for the whole product
+  aggregation: the sum of daily net flow, read as positive when more came in

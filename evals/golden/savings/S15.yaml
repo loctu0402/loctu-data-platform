@@ -1,0 +1,24 @@
+id: S15
+area: savings
+question: What was deposit conversion over the last 7 days?
+expected_sql: |
+  select round(safe_divide(sum(users_deposited), sum(users_opened)), 4)
+  from `{gold}.fct_deposit_funnel_daily`
+  where date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select round(safe_divide(sum(deposited), sum(opened)), 4)
+  from (
+    select
+      event_date,
+      count(distinct if(event_name = 'deposit_success', user_id, null)) as deposited,
+      count(distinct if(event_name = 'open_savings_tab', user_id, null)) as opened
+    from `{silver}.stg_app__events`
+    where event_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+    group by event_date
+  )
+rubric:
+  metric: deposit_conversion
+  filters:
+    - the 7 days from a week ago through yesterday
+  grain: seven days
+  aggregation: summed daily depositors over summed daily openers, never an average of daily rates

@@ -1,0 +1,19 @@
+id: S04
+area: savings
+question: What was net flow over the last 7 days?
+expected_sql: |
+  select sum(net_flow_amount)
+  from `{gold}.fct_savings_daily`
+  where date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select sum(signed_amount)
+  from `{silver}.stg_wallet__transactions`
+  where is_success and txn_type in ('cash_in', 'cash_out')
+    and txn_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: net_flow
+  filters:
+    - the 7 days from a week ago through yesterday
+    - interest is excluded
+  grain: seven days for the whole product
+  aggregation: the sum of daily net flow

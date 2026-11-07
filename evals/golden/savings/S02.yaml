@@ -1,0 +1,17 @@
+id: S02
+area: savings
+question: How much money did savers hold at the end of last week?
+expected_sql: |
+  select aum_end
+  from `{gold}.fct_savings_daily`
+  where date_day = date_sub(date_trunc(current_date('Asia/Ho_Chi_Minh'), week(monday)), interval 1 day)
+check_sql: |
+  select round(sum(end_balance), 2)
+  from `{silver}.int_wallet__account_day`
+  where date_day = date_sub(date_trunc(current_date('Asia/Ho_Chi_Minh'), week(monday)), interval 1 day)
+rubric:
+  metric: balance
+  filters:
+    - date_day is the Sunday that closed last week, with weeks running Monday to Sunday
+  grain: one day for the whole product
+  aggregation: the end-of-day snapshot of that Sunday, never a sum of the week

@@ -1,0 +1,17 @@
+id: S07
+area: savings
+question: How many accounts held money at the end of last month?
+expected_sql: |
+  select funded_accounts
+  from `{gold}.fct_savings_daily`
+  where date_day = last_day(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month))
+check_sql: |
+  select countif(end_balance >= 1)
+  from `{silver}.int_wallet__account_day`
+  where date_day = last_day(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month))
+rubric:
+  metric: funded_accounts
+  filters:
+    - date_day is the last day of last month
+  grain: one day for the whole product
+  aggregation: the end-of-day snapshot of that day, never a sum of days

@@ -1,0 +1,7 @@
+id: S16
+area: savings
+question: What is the average lifetime value of a savings customer?
+expect_refusal: true
+rubric:
+  missing: customer lifetime value
+  refusal: says the knowledge base has no lifetime value metric and the savings data holds no revenue or cost, then hands the question to an analyst

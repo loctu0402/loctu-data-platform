@@ -1,0 +1,21 @@
+id: K11
+area: kitchen_ops
+question: What was the average delivery time for kitchen K01 last month?
+expected_sql: |
+  select round(safe_divide(sum(delivery_minutes_sum), sum(completed_orders)), 1)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'K01' and platform = 'all'
+    and date_trunc(date_day, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+check_sql: |
+  select round(avg(if(is_completed, delivery_minutes, null)), 1)
+  from `{silver}.int_kitchen__orders_enriched`
+  where kitchen_id = 'K01'
+    and date_trunc(order_date, month) = date_trunc(date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 month), month)
+rubric:
+  metric: delivery_time
+  filters:
+    - kitchen_id is K01
+    - platform is the 'all' row
+    - every day of last month
+  grain: one month for one kitchen
+  aggregation: summed delivery minutes over summed completed orders, never an average of daily averages

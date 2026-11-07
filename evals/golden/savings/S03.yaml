@@ -1,0 +1,20 @@
+id: S03
+area: savings
+question: How much did the savings balance grow over the last 7 days?
+expected_sql: |
+  select
+    max(if(date_day = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day), aum_end, null))
+    - max(if(date_day = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 8 day), aum_end, null))
+  from `{gold}.fct_savings_daily`
+  where date_day in (date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day), date_sub(current_date('Asia/Ho_Chi_Minh'), interval 8 day))
+check_sql: |
+  select sum(signed_amount)
+  from `{silver}.stg_wallet__transactions`
+  where is_success
+    and txn_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: balance
+  filters:
+    - compares the snapshot of yesterday with the snapshot of eight days ago
+  grain: two days for the whole product
+  aggregation: the difference of two snapshots, interest included, never a sum of daily balances

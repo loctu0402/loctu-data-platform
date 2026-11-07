@@ -1,0 +1,21 @@
+id: K01
+area: kitchen_ops
+question: How many orders did the kitchens take yesterday through the aggregator platforms?
+expected_sql: |
+  select sum(orders)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'all' and platform in ('aggregator_a', 'aggregator_b')
+    and date_day = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select count(*)
+  from `{silver}.stg_kitchen__orders`
+  where platform in ('aggregator_a', 'aggregator_b')
+    and order_date = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: orders
+  filters:
+    - kitchen_id is the 'all' row
+    - platform is aggregator_a or aggregator_b
+    - date_day is yesterday
+  grain: one day across all kitchens
+  aggregation: the sum of the two platform rows

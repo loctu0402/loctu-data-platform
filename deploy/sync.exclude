@@ -8,4 +8,4 @@ docs/
 dbt/target/
 dbt/logs/
 report/out/
-agent/golden/results/
+evals/results/

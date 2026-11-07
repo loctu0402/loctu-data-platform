@@ -1,0 +1,21 @@
+id: K02
+area: kitchen_ops
+question: How many orders did kitchen K03 take in the last 7 days?
+expected_sql: |
+  select sum(orders)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'K03' and platform = 'all'
+    and date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select count(*)
+  from `{silver}.stg_kitchen__orders`
+  where kitchen_id = 'K03'
+    and order_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: orders
+  filters:
+    - kitchen_id is K03
+    - platform is the 'all' row
+    - the 7 days from a week ago through yesterday
+  grain: seven days for one kitchen
+  aggregation: the sum of daily orders

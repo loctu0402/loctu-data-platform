@@ -16,12 +16,12 @@ check:
 	sqlfluff lint dbt/models dbt/tests
 	python tools/gate.py
 	python tools/ground.py
-	python agent/eval_golden.py
+	python tools/eval_golden.py
 	pytest -q
 	python -m py_compile airflow/dags/saola_daily.py
 
 golden:
-	python agent/eval_golden.py --live --target $(TARGET)
+	python tools/eval_golden.py --live --target $(TARGET)
 
 report:
 	python report/daily_report.py

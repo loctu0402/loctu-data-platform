@@ -6,6 +6,6 @@ dbt/logs/
 dbt/dbt_packages/
 dbt/.user.yml
 report/out/
-agent/golden/results/
+evals/results/
 .env
 *.json.key

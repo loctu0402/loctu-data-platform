@@ -1,0 +1,19 @@
+id: K10
+area: kitchen_ops
+question: How long did deliveries take yesterday across all kitchens?
+expected_sql: |
+  select round(safe_divide(sum(delivery_minutes_sum), sum(completed_orders)), 1)
+  from `{gold}.agg_kitchen_daily`
+  where kitchen_id = 'all' and platform = 'all'
+    and date_day = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+check_sql: |
+  select round(avg(if(is_completed, delivery_minutes, null)), 1)
+  from `{silver}.int_kitchen__orders_enriched`
+  where order_date = date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+rubric:
+  metric: delivery_time
+  filters:
+    - kitchen_id and platform are the 'all' rows
+    - date_day is yesterday
+  grain: one day across all kitchens
+  aggregation: delivery minutes over completed orders

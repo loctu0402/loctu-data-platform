@@ -1,0 +1,7 @@
+id: K13
+area: kitchen_ops
+question: Which courier was late most often in the last 7 days?
+expect_refusal: true
+rubric:
+  missing: courier-level delivery performance
+  refusal: says orders record the courier type but not the courier, then hands the question to an analyst

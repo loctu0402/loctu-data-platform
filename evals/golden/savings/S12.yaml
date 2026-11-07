@@ -1,0 +1,28 @@
+id: S12
+area: savings
+question: Which channel brought in the most cash over the last 7 days?
+expected_sql: |
+  select channel
+  from `{gold}.agg_savings_flow_daily`
+  where txn_type = 'cash_in' and segment = 'all' and channel != 'all'
+    and date_day between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+  group by channel
+  order by sum(amount) desc, channel
+  limit 1
+check_sql: |
+  select channel
+  from `{silver}.stg_wallet__transactions`
+  where is_success and txn_type = 'cash_in'
+    and txn_date between date_sub(current_date('Asia/Ho_Chi_Minh'), interval 7 day) and date_sub(current_date('Asia/Ho_Chi_Minh'), interval 1 day)
+  group by channel
+  order by sum(amount) desc, channel
+  limit 1
+rubric:
+  metric: flow_by_channel
+  filters:
+    - txn_type is cash_in
+    - segment is the 'all' row
+    - the channel 'all' row is excluded
+    - the 7 days from a week ago through yesterday
+  grain: seven days per channel
+  aggregation: amounts summed per channel, then the largest channel
