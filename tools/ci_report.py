@@ -48,7 +48,7 @@ def render(plan, needs, logs):
                 problems += [("eval live", p) for p in found]
                 lines.append(f"| eval live | warehouse secret | {'failed' if result == 'failure' else 'passed'} | {cell(summary)} |")
             elif result == "success":
-                lines.append("| eval live | warehouse secret | skipped | no SAOLA_GCP_SA_KEY secret, so gold and silver were not compared on BigQuery |")
+                lines.append("| eval live | warehouse secret | skipped | no GCP_SA_KEY secret, so gold and silver were not compared on BigQuery |")
     if problems:
         lines += ["", "### Problems", ""] + [f"- {r}: {p}" for r, p in problems]
     lines += ["", "### Approval", "", "| Unit | Code owners |", "|---|---|"]

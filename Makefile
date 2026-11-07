@@ -1,7 +1,7 @@
 DBT = cd dbt && dbt
 TARGET ?= dev
 BASE ?= origin/main
-VM_ROOT ?= /tmp/saola-airflow-vm
+VM_ROOT ?= /tmp/airflow-vm
 
 install:
 	pip install -r requirements.txt

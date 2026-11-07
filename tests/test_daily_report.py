@@ -34,7 +34,7 @@ def frames():
 def test_report_renders_every_section():
     ctx = build_context(frames(), AS_OF)
     html = render_html(ctx)
-    assert "Saola daily" in html and "Kitchens, last 7 days" in html
+    assert "Platform daily" in html and "Kitchens, last 7 days" in html
     assert [f["label"] for f in ctx["flows"]] == ["Cash in", "Cash out", "Net flow"]
     assert abs(ctx["deposit_conversion"] - 0.24) < 1e-9
     assert abs(ctx["kitchen"]["cancel_rate"] - 0.04) < 1e-9

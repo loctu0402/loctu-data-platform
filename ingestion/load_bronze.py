@@ -160,7 +160,7 @@ def load_bigquery(tables, project, location):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--project", default=os.environ.get("SAOLA_GCP_PROJECT"))
+    ap.add_argument("--project", default=os.environ.get("GCP_PROJECT_ID"))
     ap.add_argument("--location", default="asia-southeast1")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()

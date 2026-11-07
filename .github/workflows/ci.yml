@@ -18,7 +18,7 @@ defaults:
     shell: bash
 
 env:
-  SAOLA_GCP_PROJECT: saola-data-ci
+  GCP_PROJECT_ID: data-platform-ci
 
 jobs:
   detect:
@@ -119,7 +119,7 @@ jobs:
     if: ${{ !cancelled() && needs.detect.outputs.eval == 'true' && !contains(needs.*.result, 'failure') }}
     runs-on: ubuntu-latest
     env:
-      HAS_WAREHOUSE: ${{ secrets.SAOLA_GCP_SA_KEY != '' }}
+      HAS_WAREHOUSE: ${{ secrets.GCP_SA_KEY != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -131,10 +131,10 @@ jobs:
       - if: env.HAS_WAREHOUSE == 'true'
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.SAOLA_GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
       - if: env.HAS_WAREHOUSE == 'true'
         env:
-          SAOLA_GCP_PROJECT: ${{ vars.SAOLA_GCP_PROJECT }}
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
         run: python tools/eval_golden.py --plan plan.json --live --target prod | tee results/eval-live.log
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

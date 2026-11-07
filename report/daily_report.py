@@ -96,12 +96,12 @@ def chat_card(ctx):
 
 
 def deliver(html, card, as_of):
-    webhook = os.environ.get("SAOLA_CHAT_WEBHOOK")
+    webhook = os.environ.get("CHAT_WEBHOOK_URL")
     if webhook:
         requests.post(webhook, data=json.dumps(card), headers={"Content-Type": "application/json"}, timeout=10).raise_for_status()
     if os.environ.get("SMTP_HOST"):
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"Saola daily, {as_of}"
+        msg["Subject"] = f"Platform daily, {as_of}"
         msg["From"] = os.environ["SMTP_USER"]
         msg["To"] = os.environ["REPORT_RECIPIENTS"]
         msg.attach(MIMEText(html, "html", "utf-8"))
@@ -114,8 +114,8 @@ def deliver(html, card, as_of):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--as-of", type=date.fromisoformat, default=date.today() - timedelta(days=1))
-    ap.add_argument("--project", default=os.environ.get("SAOLA_GCP_PROJECT"))
-    ap.add_argument("--gold-dataset", default=os.environ.get("SAOLA_GOLD_DATASET", "gold"))
+    ap.add_argument("--project", default=os.environ.get("GCP_PROJECT_ID"))
+    ap.add_argument("--gold-dataset", default=os.environ.get("GOLD_DATASET", "gold"))
     ap.add_argument("--send", action="store_true")
     args = ap.parse_args()
 

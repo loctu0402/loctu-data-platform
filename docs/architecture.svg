@@ -10,7 +10,7 @@
     </style>
   </defs>
   <rect width="1250" height="610" rx="18" fill="#0b1220"/>
-  <text x="32" y="44" fill="#f8fafc" font-size="22" font-weight="800">Saola data platform</text>
+  <text x="32" y="44" fill="#f8fafc" font-size="22" font-weight="800">loctu-data-platform</text>
   <text x="32" y="66" fill="#94a3b8" font-size="13">Source systems to contracted marts on BigQuery, then dashboards, a forecast-checked daily report and an AI agent, every morning.</text>
 
   <text x="32" y="98" class="h" fill="#f59e0b">SOURCES</text>
@@ -129,5 +129,5 @@
   <text x="48" y="514" class="s">source freshness  →  build silver  →  build gold  →  golden eval against an independent recompute  →  daily report  ·  every failure posts to chat</text>
   <rect x="32" y="538" width="1186" height="54" rx="10" fill="#0f1a2c" stroke="#334155"/>
   <text x="48" y="561" class="h" fill="#94a3b8">CI ON EVERY PULL REQUEST · CD ON MAIN</text>
-  <text x="48" y="580" class="s">dbt parse  ·  SQLFluff (BigQuery)  ·  knowledge gate  ·  pytest  ·  then a self-hosted runner on the Airflow VM syncs a release, switches it atomically and smoke-checks the DAG</text>
+  <text x="48" y="580" class="s">detect  →  lint  →  gate  →  ground  →  eval  →  report, only the rounds a change needs  ·  then a self-hosted runner on the Airflow VM syncs a release and smoke-checks the DAG</text>
 </svg>

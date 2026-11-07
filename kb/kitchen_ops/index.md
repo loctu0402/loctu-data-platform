@@ -7,7 +7,7 @@ description: Cloud-kitchen order volume, delivery speed, on-time delivery and ca
 # Kitchen operations
 
 ## Scope
-Saola runs five cloud kitchens that take orders through its own app and two aggregator platforms. This area answers how many orders the kitchens took, how fast and how reliably they delivered, and how many orders were cancelled, for any kitchen and platform. The operations team asks these questions, and the daily report and the analytics agent answer them from two gold models.
+The business runs five cloud kitchens that take orders through its own app and two aggregator platforms. This area answers how many orders the kitchens took, how fast and how reliably they delivered, and how many orders were cancelled, for any kitchen and platform. The operations team asks these questions, and the daily report and the analytics agent answer them from two gold models.
 
 ## Metrics
 | Metric | What it answers | Model |

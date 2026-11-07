@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: wallet
     description: Savings ledger replicated from the core banking-partner database by CDC.
-    database: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+    database: "{{ env_var('GCP_PROJECT_ID', 'data-platform-prod') }}"
     schema: bronze_wallet
     loaded_at_field: _loaded_at
     config:
@@ -23,7 +23,7 @@ sources:
 
   - name: app
     description: Product analytics events streamed from the mobile app.
-    database: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+    database: "{{ env_var('GCP_PROJECT_ID', 'data-platform-prod') }}"
     schema: bronze_app
     loaded_at_field: _loaded_at
     config:
@@ -34,7 +34,7 @@ sources:
 
   - name: kitchen
     description: Orders from the kitchen POS and delivery platforms, synced by API connectors.
-    database: "{{ env_var('SAOLA_GCP_PROJECT', 'saola-data-prod') }}"
+    database: "{{ env_var('GCP_PROJECT_ID', 'data-platform-prod') }}"
     schema: bronze_kitchen
     loaded_at_field: _loaded_at
     config:

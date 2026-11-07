@@ -10,12 +10,12 @@ try:
 except ImportError:
     from airflow.operators.bash import BashOperator
 
-REPO = os.environ.get("SAOLA_REPO", "/opt/airflow/repo/current")
+REPO = os.environ.get("PLATFORM_REPO", "/opt/airflow/repo/current")
 DBT = f"cd {REPO}/dbt && dbt {{cmd}} --target prod --profiles-dir ."
 
 
 def alert_chat(context):
-    webhook = os.environ.get("SAOLA_CHAT_WEBHOOK")
+    webhook = os.environ.get("CHAT_WEBHOOK_URL")
     if not webhook:
         return
     ti = context["task_instance"]
@@ -31,7 +31,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="saola_daily",
+    dag_id="platform_daily",
     start_date=datetime(2026, 1, 1),
     schedule="30 0 * * *",
     catchup=False,

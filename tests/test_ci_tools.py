@@ -18,7 +18,7 @@ def ran(p):
     ("kb/_template/metric.md", "kb"),
     ("evals/golden/kitchen_ops/K01.yaml", "golden:kitchen_ops"),
     ("evals/template_case.yaml", "evals"),
-    ("airflow/dags/saola_daily.py", "airflow"),
+    ("airflow/dags/platform_daily.py", "airflow"),
     ("deploy/sync_release.sh", "deploy"),
     (".github/workflows/deploy.yml", "deploy"),
     (".github/workflows/ci.yml", "ci"),
@@ -59,12 +59,12 @@ def test_a_tooling_change_runs_every_round_on_every_area():
 def test_downstream_models_route_to_their_kb_area():
     manifest = {
         "nodes": {
-            "model.saola.stg_kitchen__orders": {"name": "stg_kitchen__orders", "original_file_path": "models/silver/kitchen/stg_kitchen__orders.sql"},
-            "model.saola.fct_orders": {"name": "fct_orders", "original_file_path": "models/gold/ops/fct_orders.sql"},
+            "model.data_platform.stg_kitchen__orders": {"name": "stg_kitchen__orders", "original_file_path": "models/silver/kitchen/stg_kitchen__orders.sql"},
+            "model.data_platform.fct_orders": {"name": "fct_orders", "original_file_path": "models/gold/ops/fct_orders.sql"},
         },
         "sources": {},
-        "exposures": {"exposure.saola.daily_report": {"name": "daily_report"}},
-        "child_map": {"model.saola.stg_kitchen__orders": ["model.saola.fct_orders"], "model.saola.fct_orders": ["exposure.saola.daily_report"]},
+        "exposures": {"exposure.data_platform.daily_report": {"name": "daily_report"}},
+        "child_map": {"model.data_platform.stg_kitchen__orders": ["model.data_platform.fct_orders"], "model.data_platform.fct_orders": ["exposure.data_platform.daily_report"]},
     }
     assert dbt_impact(["dbt/models/silver/kitchen/stg_kitchen__orders.sql"], manifest) == (["stg_kitchen__orders"], ["fct_orders", "stg_kitchen__orders"], ["daily_report"])
     p = plan(["dbt/models/silver/kitchen/stg_kitchen__orders.sql"], manifest)
@@ -122,7 +122,7 @@ def test_report_shows_each_round_why_it_ran_and_what_stopped():
 def test_report_says_when_the_live_eval_had_no_warehouse():
     p = plan(["evals/golden/savings/S01.yaml"])
     report = render(p, {"lint": {"result": "success"}, "eval": {"result": "success"}}, {"eval": "eval offline: 17 cases; 0 problems\n"})
-    assert "| eval live | warehouse secret | skipped | no SAOLA_GCP_SA_KEY secret" in report
+    assert "| eval live | warehouse secret | skipped | no GCP_SA_KEY secret" in report
 
 
 def test_report_without_a_plan_points_at_detect():

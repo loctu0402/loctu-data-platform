@@ -2,7 +2,7 @@
 set -euo pipefail
 
 : "${RUNNER_TOKEN:?registration token from Settings > Actions > Runners > New self-hosted runner}"
-repo_url="${REPO_URL:-https://github.com/loctu0402/saola-data-platform}"
+repo_url="${REPO_URL:-https://github.com/loctu0402/loctu-data-platform}"
 dir=/opt/actions-runner
 version="$(curl -fsSL https://api.github.com/repos/actions/runner/releases/latest | grep -oP '"tag_name":\s*"v\K[^"]+')"
 

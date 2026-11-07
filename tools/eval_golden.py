@@ -143,8 +143,8 @@ def main(argv=None):
     if problems or not args.live:
         return 1 if problems else 0
 
-    prefix = "" if args.target == "prod" else os.environ.get("SAOLA_DEV_DATASET", "dbt_dev") + "_"
-    results = live_checks(cases, os.environ.get("SAOLA_GCP_PROJECT"), f"{prefix}gold", f"{prefix}silver")
+    prefix = "" if args.target == "prod" else os.environ.get("DBT_DEV_DATASET", "dbt_dev") + "_"
+    results = live_checks(cases, os.environ.get("GCP_PROJECT_ID"), f"{prefix}gold", f"{prefix}silver")
     stamp = datetime.now(timezone.utc)
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / f"{stamp:%Y-%m-%d}.json").write_text(

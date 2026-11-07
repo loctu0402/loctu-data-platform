@@ -5,7 +5,7 @@ exposures:
     label: Daily report (email and chat)
     type: application
     maturity: high
-    url: https://github.com/loctu0402/saola-data-platform/tree/main/report
+    url: https://github.com/loctu0402/loctu-data-platform/tree/main/report
     owner: {name: Analytics Engineering}
     depends_on:
       - ref('fct_savings_daily')
@@ -16,7 +16,7 @@ exposures:
     label: AI analytics agent
     type: application
     maturity: medium
-    url: https://github.com/loctu0402/saola-data-platform/tree/main/kb
+    url: https://github.com/loctu0402/loctu-data-platform/tree/main/kb
     owner: {name: Analytics Engineering}
     depends_on:
       - ref('fct_savings_daily')
@@ -29,7 +29,7 @@ exposures:
     label: Looker Studio dashboards via Cube
     type: dashboard
     maturity: high
-    url: https://github.com/loctu0402/saola-data-platform/tree/main/semantic/cube
+    url: https://github.com/loctu0402/loctu-data-platform/tree/main/semantic/cube
     owner: {name: Analytics Engineering}
     depends_on:
       - ref('fct_savings_daily')
